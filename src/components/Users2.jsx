@@ -1,24 +1,21 @@
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useLoaderData } from "react-router-dom";
 
-const Users = () => {
-  const loadedUsers = useLoaderData();
-  const [users, setUsers] = useState(loadedUsers);
+const Users2 = () => {
+  const {isPending,data: users, isError, error} = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:5000/user")
+      return res.json();
+    }
+  })  
 
-  // axios
+  // const [users, setUsers] = useState([]);
+
   // useEffect(() => {
-  //   fetch("/")
+  //   fetch("http://localhost:5000/user")
   //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log(data.data);
-  //     });
-  // }, []);
-
-  // useEffect(() => {
-  //   axios.get("/").then((data) => {
-  //     console.log(data.data);
-  //   });
+  //     .then((data) => setUsers(data));
   // }, []);
 
   const handleDelete = (id) => {
@@ -29,16 +26,23 @@ const Users = () => {
       .then((data) => {
         if (data.deletedCount > 0) {
           console.log("delete successfully");
-          const remainingUsers = users.filter((user) => user._id !== id);
-          setUsers(remainingUsers);
+          //   const remainingUsers = users.filter((user) => user._id !== id);
+          //   setUsers(remainingUsers);
         }
       });
   };
 
+  if(isPending){
+    return <span className="loading loading-spinner loading-lg text-amber-400"></span>
+  }
+  if(isError){
+    return <p>{error.message}</p>
+  }
+
   return (
     <div>
       <h2 className="text-2xl text-center font-bold">
-        Users: {loadedUsers.length}{" "}
+        {/* Users: {loadedUsers.length}{" "} */}
       </h2>
       <div className="overflow-x-auto">
         <table className="table">
@@ -77,4 +81,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Users2;

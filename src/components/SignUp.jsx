@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../Providers/AuthProviders";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const SignUp = () => {
   const { createUser } = useContext(AuthContext);
@@ -18,24 +19,39 @@ const SignUp = () => {
 
         const createdAt = result.user?.metadata?.creationTime;
         const user = { email, password, createdAt: createdAt };
-        fetch("https://coffee-store-server-eta-pearl.vercel.app/user", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(user),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.insertedId) {
-              Swal.fire({
-                title: "Success!",
-                text: "User Added Successfully",
-                icon: "success",
-                confirmButtonText: "Cool",
-              });
-            }
-          });
+
+        
+        // using axios
+        axios.post("http://localhost:5000/user", user).then((data) => {
+          if (data.data.insertedId) {
+            Swal.fire({
+              title: "Success!",
+              text: "User Added Successfully",
+              icon: "success",
+              confirmButtonText: "Cool",
+            });
+          }
+        });
+
+        // using fetch
+        // fetch("http://localhost:5000/user", {
+        //   method: "POST",
+        //   headers: {
+        //     "content-type": "application/json",
+        //   },
+        //   body: JSON.stringify(user),
+        // })
+        //   .then((res) => res.json())
+        //   .then((data) => {
+        //     if (data.insertedId) {
+        //       Swal.fire({
+        //         title: "Success!",
+        //         text: "User Added Successfully",
+        //         icon: "success",
+        //         confirmButtonText: "Cool",
+        //       });
+        //     }
+        //   });
       })
       .catch((error) => {
         console.log(error);
@@ -77,8 +93,8 @@ const SignUp = () => {
             <div className="form-control mt-6">
               <button className="btn btn-primary">sign Up</button>
             </div>
-            <Link className="text-center text-red-500 font-bold" to='/signin'>
-            Sign In
+            <Link className="text-center text-red-500 font-bold" to="/signin">
+              Sign In
             </Link>
           </form>
         </div>
